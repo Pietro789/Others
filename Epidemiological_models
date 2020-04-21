@@ -1,0 +1,168 @@
+import time
+import random
+import math
+import matplotlib.pyplot as plt
+import numpy as np
+start=time.time()
+
+
+M=int(input("Do you want to simulate the SIR(1), SIS(2) or SEIR(3) model? "))
+if M==1:
+    so=int(input("Digite o número inicial de pessoas sãs: "))
+    io=int(input("Digite o número inicial de infectados: "))
+    ro=int(input("Digite o número inicial de recuperados: "))
+    mo=int(input("Digite o número inicial de mortos: "))
+    c1=float(input("Digite a taxa de mortalidade dos jovens: "))
+    c2=float(input("Digite a taxa de mortalidade dos adultos: "))
+    c3=float(input("Digite a taxa de mortalidade dos idosos: "))
+    a=float(input("Digite a taxa de contaminação: "))
+    b=float(input("Digite a taxa de recuperação: "))
+    dt=float(input("Digite o passo de tempo: "))
+    t=int(input("Digite o tempo total: "))
+    c=float(input("Digite a taxa de morte natural: "))
+    d=float(input("Digite a taxa de nascimento natural: "))
+    N=so+io+ro
+    r=ro
+    m=mo
+    listar=np.zeros(t,dtype=int)
+    listam=np.zeros(t,dtype=int)
+    
+if M==2:
+    so=int(input("Digite o número inicial de pessoas sãs: "))
+    io=int(input("Digite o número inicial de infectados: "))
+    a=float(input("Digite a taxa de contaminação: "))
+    b=float(input("Digite a taxa de recuperação: "))
+    dt=float(input("Digite o passo de tempo: "))
+    t=int(input("Digite o tempo total: "))
+    c=float(input("Digite a taxa de morte natural: "))
+    d=float(input("Digite a taxa de nascimento natural: "))
+    N=so+io
+
+if M==3:
+    so=int(input("Digite o número inicial de pessoas sãs: "))
+    io=int(input("Digite o número inicial de infectados: "))
+    xo=int(input("Digite o número inicial de expostos: "))
+    ro=int(input("Digite o número inicial de recuperados: "))
+    mo=int(input("Digite o número inicial de mortos: "))
+    c1=float(input("Digite a taxa de mortalidade dos jovens: "))
+    c2=float(input("Digite a taxa de mortalidade dos adultos: "))
+    c3=float(input("Digite a taxa de mortalidade dos idosos: "))
+    e=float(input("Digite a taxa de exposição: "))
+    a=float(input("Digite a taxa de contaminação: "))
+    b=float(input("Digite a taxa de recuperação: "))
+    dt=float(input("Digite o passo de tempo: "))
+    t=int(input("Digite o tempo total: "))
+    c=float(input("Digite a taxa de morte natural: "))
+    d=float(input("Digite a taxa de nascimento natural: "))
+    N=so+io+ro+xo
+    r=ro
+    m=mo
+    x=xo
+    listar=np.zeros(t,dtype=int)
+    listam=np.zeros(t,dtype=int)
+    listae=np.zeros(t,dtype=int)
+
+s=so
+i=io
+
+
+
+listat=np.zeros(t,dtype=int)
+for j in range (t):
+    listat[j]=j
+
+lista=np.zeros(N,dtype=int)
+listai=np.zeros(t,dtype=int)
+listas=np.zeros(t,dtype=int)
+
+
+
+if M==1:
+    for j in range (t):
+        si=s
+        ii=i
+        ri=r
+        s+=dt*d*N-s*i*a*dt/N-c*s*dt
+        i+=-b*dt*i+i*si*a*dt/N-(0.6*c1+c2*0.25+c3*0.15)*i*dt-c*i*dt
+        r+=b*dt*ii-c*r*dt
+        m+=(0.6*c1+c2*0.25+c3*0.15)*ii*dt+c*(ri+ii+si)
+            
+        listar[j]=r
+        listai[j]=i
+        listas[j]=s
+        listam[j]=m
+
+if M==2:
+    for j in range (t):
+        si=s
+        ii=i
+        s+=-s*i*a*dt/N+b*dt*i+d*dt*N-c*dt*s
+        i+=-b*dt*i-c*dt*i+a*i*si*dt/N
+        
+        listas[j]=s
+        listai[j]=i
+
+if M==3:
+    for j in range (t):
+        si=s
+        xi=x
+        ii=i
+        ri=r
+        s+=-dt*e*s*i/N-c*dt*s+d*dt*N
+        x+=dt*e*si*i/N-c*dt*x-a*dt*x
+        i+=a*dt*xi-b*dt*i-c*dt*i
+        r+=b*dt*ii-c*dt*r
+        
+        m+=(0.6*c1+c2*0.25+c3*0.15)*ii*dt+c*(ri+ii+si+xi)
+        listas[j]=s
+        listai[j]=i
+        listar[j]=r
+        listae[j]=x
+
+print("O número final de infectados é: ")
+print(int(i))
+print()
+print("O número final de sãos é: ")
+print(int(s))
+print()
+if M==1 or M==3:
+    print("O número final de recuperados é: ")
+    print(int(r))
+    print()
+
+    print("O número final de mortos é: ")
+    print(int(m))
+if M==3:
+    print("O número final de expostos é: ")
+    print(int(x))
+    print()
+end=time.time()
+print()
+print("O tempo total da simulação é: ")
+print(end-start)
+plt.plot(listat, listai,'ro',color="Red")
+plt.xlabel('Tempo')
+plt.ylabel('Pessoas infectadas')
+plt.title('Evolução temporal de uma doença')
+
+plt.plot(listat, listas,'ro',color="Blue")
+plt.xlabel('Tempo')
+plt.ylabel('Pessoas sadias')
+plt.title('Evolução temporal de uma doença')
+
+
+if M==1 or M==3:
+    plt.plot(listat, listar,'ro',color="Green")
+    plt.xlabel('Tempo')
+    plt.ylabel('Pessoas')
+    plt.title('Evolução temporal de uma doença')
+
+if M==3:
+    plt.plot(listat, listae,'ro',color="Yellow")
+    plt.xlabel('Tempo')
+    plt.ylabel('Pessoas expostas')
+    plt.title('Evolução temporal de uma doença')
+
+
+
+plt.show()
